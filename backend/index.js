@@ -23,7 +23,7 @@ app.use("/api/v1/blog", blogRouter);
 const PORT = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
-  res.send("index.html");
+  return res.sendFile("index.html");
 });
 
 app.listen(PORT, (req, res) => {
