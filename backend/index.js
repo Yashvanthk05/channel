@@ -6,7 +6,7 @@ const blogRouter = require("./v1/routes/blog.route");
 
 const app = express();
 
-await connectToDB();
+connectToDB();
 
 app.use((req, res, next) => {
   console.log(`${req.method}: ${req.url}`);
