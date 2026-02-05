@@ -13,6 +13,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(express.static("../frontend/dist"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
@@ -20,6 +21,10 @@ app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/blog", blogRouter);
 
 const PORT = process.env.PORT || 3000;
+
+app.get("/", (req, res) => {
+  res.send("index.html");
+});
 
 app.listen(PORT, (req, res) => {
   console.log(`Server Listening on Port ${PORT}`);

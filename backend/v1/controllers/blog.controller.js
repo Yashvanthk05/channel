@@ -54,18 +54,21 @@ const getBlogBySlug = async (req, res) => {
 };
 
 const getAllBlogs = async (req, res) => {
-  const page = req.query.page | 1;
-  const limit = req.query.limi | 10;
-  const skip = (page - 1) * limit;
+  const page = req.query.page || 1;
+  const limit = req.query.limit || 10;
+  const totalBlogs = await Blog.countDocuments({
+    status: { $ne: "private" },
+  });
+  const totalPages = Math.ceil(totalBlogs / limit);
+  let skip;
+  if (page > totalPages) skip = (totalPages - 1) * limit;
+  else skip = (page - 1) * limit;
 
   try {
-    const blogs = await Blog.find({ status: { $ne: "private" } }).populate("author")
+    const blogs = await Blog.find({ status: { $ne: "private" } })
+      .populate("author")
       .skip(skip)
       .limit(limit);
-    const totalBlogs = await Blog.countDocuments({
-      status: { $ne: "private" },
-    });
-    const totalPages = Math.ceil(totalBlogs / limit);
 
     res.status(200).json({ blogs, page, limit, totalPages });
   } catch (err) {
