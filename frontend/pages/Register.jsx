@@ -6,6 +6,11 @@ import { toast } from "react-toastify";
 const Register = () => {
   const { login, user } = useAuth();
   const navigate = useNavigate();
+  const [formdata, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
 
   if (user) {
     toast.warning("Already Logged In", {
@@ -16,13 +21,7 @@ const Register = () => {
     navigate("/");
     return;
   }
-
-  const [formdata, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
-  });
-
+  
   const handleLogin = async (e) => {
     e.preventDefault();
     const res = await fetch("/api/v1/auth/register", {
@@ -83,7 +82,7 @@ const Register = () => {
           onClick={handleLogin}
           className="bg-orange-300 mt-5 text-neutral-800 rounded-sm p-2"
         >
-          Login
+          Register
         </button>
       </form>
       <span>
