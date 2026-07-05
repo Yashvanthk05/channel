@@ -6,7 +6,9 @@ const checkToken = (req, res, next) => {
 
   try {
     const result = jwt.verify(token, process.env.SECRET);
-    res.status(200).json({ message: "User already Logged In" });
+    req.userid = result.id;
+    req.isLoggedIn = true;
+    return next();
   } catch (err) {
     next();
   }
