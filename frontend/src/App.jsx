@@ -8,6 +8,7 @@ import Blog from "../pages/Blog";
 import { ToastContainer } from "react-toastify";
 import ProtectedLayout from "../layouts/ProtectedLayout";
 import Create from "../pages/Create";
+import Edit from "../pages/Edit";
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
           <Route path="/blog/:slug" element={<Blog />} />
           <Route element={<ProtectedLayout />}>
             <Route path="/create" element={<Create />}></Route>
+            <Route path="/edit/:slug" element={<Edit />}></Route>
           </Route>
         </Route>
       </Routes>

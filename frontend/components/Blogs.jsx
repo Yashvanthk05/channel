@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import Avatar from "react-avatar";
 import { Link, useSearchParams } from "react-router-dom";
-import rehypeHighlight from "rehype-highlight";
-import remarkGfm from "remark-gfm";
-import ReactMarkdown from "react-markdown";
+import MDEditor from "@uiw/react-md-editor";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const Blogs = () => {
@@ -56,7 +54,7 @@ const Blogs = () => {
         </div>
 
         {loading ? (
-          <p className="mt-2 text-xl">Loading...</p>
+          <p className="mt-2 text-xl text-center">Loading...</p>
         ) : (
           <>
             <div className="mt-2 flex justify-center gap-4 flex-wrap">
@@ -66,23 +64,15 @@ const Blogs = () => {
                   key={blog._id}
                   to={`/blog/${blog.slug}`}
                 >
-                  <span className="font-bold text-xl">
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      rehypePlugins={[rehypeHighlight]}
-                    >
-                      {blog.title}
-                    </ReactMarkdown>
+                  <span className="font-bold text-xl line-clamp-2" data-color-mode="dark">
+                    <MDEditor.Markdown source={blog.title} style={{ backgroundColor: 'transparent' }} />
                   </span>
-                  <span className="text-justify">
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      rehypePlugins={[rehypeHighlight]}
-                    >
-                      {blog.description.length > 200
+                  <span className="text-justify line-clamp-3 overflow-hidden text-neutral-300" data-color-mode="dark">
+                    <MDEditor.Markdown source={
+                      blog.description.length > 200
                         ? `${blog.description.slice(0, 200)}...`
-                        : blog.description}
-                    </ReactMarkdown>
+                        : blog.description
+                    } style={{ backgroundColor: 'transparent' }} />
                   </span>
                   <div className="mt-2 flex gap-2 items-center">
                     <Avatar

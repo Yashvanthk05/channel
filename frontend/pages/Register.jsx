@@ -25,7 +25,7 @@ const Register = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const res = await fetch("/api/v1/auth/login", {
+    const res = await fetch("/api/v1/auth/register", {
       method: "POST",
       credentials: "include",
       body: JSON.stringify(formdata),
@@ -46,13 +46,13 @@ const Register = () => {
       <span className="text-2xl">Register</span>
       <form className="flex flex-col gap-4 text-xl">
         <span className="flex flex-col">
-          <label htmlFor="email">Username</label>
+          <label htmlFor="username">Username</label>
           <input
             className="bg-neutral-700 rounded-sm outline-0 p-1 px-2"
-            type="email"
-            name="email"
+            type="name"
+            name="username"
             onChange={(e) => {
-              setFormData({ ...formdata, email: e.target.value });
+              setFormData({ ...formdata, username: e.target.value });
             }}
           />
         </span>

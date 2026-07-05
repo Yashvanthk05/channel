@@ -3,6 +3,7 @@ const User = require("../models/User");
 
 const registerValidator = async (req, res, next) => {
   const { email, username, password } = req.body;
+  console.log(req.body)
   const result = registerSchema.safeParse({ email, username, password });
 
   if (!result.success) {

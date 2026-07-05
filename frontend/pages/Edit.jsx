@@ -1,23 +1,50 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MDEditor from "@uiw/react-md-editor";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import NotFound from "../components/NotFound";
 
-const Create = () => {
+const Edit = () => {
+  const { slug } = useParams();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [body, setBody] = useState("");
   const [status, setStatus] = useState("public");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchBlog = async () => {
+      try {
+        const res = await fetch(`/api/v1/blog/${slug}`);
+        if (!res.ok) {
+          setError(true);
+          return;
+        }
+        const data = await res.json();
+        setTitle(data.title);
+        setDescription(data.description);
+        setBody(data.body);
+        setStatus(data.status || "public");
+      } catch (err) {
+        console.error(err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBlog();
+  }, [slug]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setSaving(true);
 
     try {
-      const res = await fetch("/api/v1/blog/create", {
-        method: "POST",
+      const res = await fetch(`/api/v1/blog/${slug}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
@@ -32,30 +59,36 @@ const Create = () => {
       const data = await res.json();
       
       if (!res.ok) {
-        toast.error(data.message || "Failed to create blog");
+        toast.error(data.message || "Failed to update blog");
         return;
       }
 
-      toast.success("Blog created successfully!");
-      if(data.slug) {
-        navigate(`/blog/${data.slug}`);
-      } else if (data.blog && data.blog.slug) {
-         navigate(`/blog/${data.blog.slug}`);
+      toast.success("Blog updated successfully!");
+      if(data.slug || (data.blog && data.blog.slug)) {
+         navigate(`/blog/${data.slug || data.blog.slug}`);
       } else {
-        navigate("/");
+         navigate(`/blog/${slug}`);
       }
     } catch (err) {
       console.error(err);
       toast.error("Internal Server Error");
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
+
+  if (loading) {
+    return <div className="min-h-dvh flex justify-center mt-20 text-xl">Loading...</div>;
+  }
+
+  if (error) {
+    return <NotFound message="Blog Not Found or You don't have permission" />;
+  }
 
   return (
     <div className="flex justify-center min-h-dvh">
       <div className="mt-[15dvh] pb-18 px-2 md:px-10 lg:px-24 w-full max-w-5xl">
-        <h1 className="text-3xl font-bold mb-8 text-neutral-200">Create New Blog</h1>
+        <h1 className="text-3xl font-bold mb-8 text-neutral-200">Edit Blog</h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
             <label htmlFor="title" className="text-lg font-bold text-neutral-300">
@@ -68,7 +101,7 @@ const Create = () => {
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Post title"
               required
-              className="bg-neutral-800 text-neutral-100 border border-neutral-700 px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300"
+              className="bg-neutral-800 text-neutral-100 border border-neutral-700 px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
           </div>
 
@@ -83,7 +116,7 @@ const Create = () => {
               placeholder="Short description of your post..."
               maxLength={200}
               required
-              className="bg-neutral-800 text-neutral-100 border border-neutral-700 px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300 min-h-24 resize-y"
+              className="bg-neutral-800 text-neutral-100 border border-neutral-700 px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 min-h-24 resize-y"
             />
             <span className="text-right text-xs text-neutral-400">
               {description.length}/200
@@ -109,7 +142,7 @@ const Create = () => {
               id="status"
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="bg-neutral-800 text-neutral-100 border border-neutral-700 px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-300 w-full sm:w-48"
+              className="bg-neutral-800 text-neutral-100 border border-neutral-700 px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 w-full sm:w-48"
             >
               <option value="public">Public</option>
               <option value="private">Private</option>
@@ -119,14 +152,14 @@ const Create = () => {
           <div className="mt-4 flex gap-4">
             <button
               type="submit"
-              disabled={loading}
-              className="bg-orange-300 hover:bg-orange-400 hover:cursor-pointer text-black px-6 py-2 rounded-md font-bold transition-colors disabled:opacity-50"
+              disabled={saving}
+              className="bg-orange-600 hover:bg-orange-500 text-white px-6 py-2 rounded-md font-bold transition-colors disabled:opacity-50"
             >
-              {loading ? "Publishing..." : "Publish"}
+              {saving ? "Saving..." : "Save Changes"}
             </button>
             <button
               type="button"
-              onClick={() => navigate("/")}
+              onClick={() => navigate(`/blog/${slug}`)}
               className="bg-neutral-700 hover:bg-neutral-600 text-neutral-100 px-6 py-2 rounded-md font-bold transition-colors"
             >
               Cancel
@@ -138,4 +171,4 @@ const Create = () => {
   );
 };
 
-export default Create;
+export default Edit;
