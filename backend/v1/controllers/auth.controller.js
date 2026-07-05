@@ -24,7 +24,6 @@ const register = async (req, res) => {
 
     return res.status(201).send(newUser);
   } catch (err) {
-    console.log(err);
     return res.status(500).json({ message: "Server Error in Creating User" });
   }
 };
@@ -65,7 +64,6 @@ const checkAuth = async (req, res) => {
     const user = await User.findById(userid);
     return res.status(200).send(user);
   } catch (err) {
-    console.log(err);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

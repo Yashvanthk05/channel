@@ -21,7 +21,7 @@ const Register = () => {
     navigate("/");
     return;
   }
-  
+
   const handleLogin = async (e) => {
     e.preventDefault();
     const res = await fetch("/api/v1/auth/register", {
@@ -33,7 +33,8 @@ const Register = () => {
       },
     });
     if (!res.ok) {
-      toast.error(res.json.message);
+      const err = await res.json().catch(() => ({ message: "Unknown error" }));
+      toast.error(err.message || JSON.stringify(err));
       return;
     }
     const data = await res.json();
